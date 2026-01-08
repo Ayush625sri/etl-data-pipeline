@@ -1,1 +1,4 @@
 pandas
+mysql-connector-python
+neo4j
+faker
