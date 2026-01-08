@@ -9,7 +9,7 @@ def create_tables():
         port=MYSQL_CONFIG['port']
     )
     cursor = conn.cursor()
-    
+    cursor.execute("DROP DATABASE ecommerce")
     cursor.execute("CREATE DATABASE IF NOT EXISTS ecommerce")
     cursor.execute("USE ecommerce")
     
@@ -28,7 +28,7 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS suppliers (
                 supplier_id INT PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(100) UNIQUE NOT NULL,
-                country VARCHAR(50),
+                country VARCHAR(100),
                 contact_email VARCHAR(100),
                 contact_phone VARCHAR(20),
                 rating DECIMAL(3,2),
@@ -81,7 +81,7 @@ def create_tables():
                 street VARCHAR(200),
                 city VARCHAR(100),
                 state VARCHAR(50),
-                country VARCHAR(50),
+                country VARCHAR(100),
                 zipcode VARCHAR(20),
                 is_default BOOLEAN DEFAULT FALSE,
                 is_verified BOOLEAN DEFAULT FALSE,

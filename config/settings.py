@@ -1,5 +1,5 @@
 MYSQL_CONFIG = {
-    'host': 'localhost',
+    'host': 'host.docker.internal',
     'user': 'root',
     'password': 'password',
     'port': 3306,
@@ -7,7 +7,7 @@ MYSQL_CONFIG = {
 }
 
 NEO4J_CONFIG = {
-    'uri': 'bolt://localhost:7687',
+    'uri': 'bolt://host.docker.internal:7687',
     'user': 'neo4j',
     'password': 'password',
     'database': 'ecommerce'

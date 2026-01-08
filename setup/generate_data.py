@@ -33,8 +33,8 @@ def generate_data():
         cursor.execute("""INSERT IGNORE INTO suppliers 
                          (name, country, contact_email, contact_phone, rating) 
                          VALUES (%s, %s, %s, %s, %s)""",
-                      (fake.company(), fake.country(), fake.company_email(),
-                       fake.phone_number(), round(random.uniform(3.5, 5.0), 2)))
+                      (fake.company(), fake.country()[:100], fake.company_email(),
+                       f'+1-{random.randint(200,999)}-{random.randint(100,999)}-{random.randint(1000,9999)}', round(random.uniform(3.5, 5.0), 2)))
     
     conn.commit()
     
@@ -71,7 +71,7 @@ def generate_data():
                           loyalty_points, registration_date) 
                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                       (fake.email(), fake.first_name(), fake.last_name(), 
-                       fake.phone_number(), random.randint(18, 75),
+                       f'+1-{random.randint(200,999)}-{random.randint(100,999)}-{random.randint(1000,9999)}', random.randint(18, 75),
                        random.choice(['Male', 'Female', 'Other']),
                        random.choice(['Premium', 'Standard', 'Basic']),
                        random.randint(0, 5000), reg_date))
@@ -90,7 +90,7 @@ def generate_data():
                              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                           (cid, random.choice(['Home', 'Office', 'Other']),
                            fake.street_address(), fake.city(), fake.state(),
-                           fake.country(), fake.zipcode(), 
+                           fake.country()[:100], fake.zipcode(), 
                            idx == 0, random.choice([True, False])))
     
     conn.commit()
@@ -122,11 +122,13 @@ def generate_data():
         
         # Order items
         num_items = random.randint(1, 5)
-        subtotal = 0
+        subtotal = 0.0
+        total_discount = 0.0
+        
         for _ in range(num_items):
             pid = random.choice(product_ids)
             cursor.execute("SELECT price FROM products WHERE product_id=%s", (pid,))
-            price = cursor.fetchone()[0]
+            price = float(cursor.fetchone()[0])
             qty = random.randint(1, 5)
             discount = round(price * qty * random.uniform(0, 0.2), 2)
             
@@ -134,17 +136,19 @@ def generate_data():
                              (order_id, product_id, quantity, unit_price, discount) 
                              VALUES (%s, %s, %s, %s, %s)""",
                           (order_id, pid, qty, price, discount))
-            subtotal += (price * qty - discount)
+            
+            subtotal += (price * qty)
+            total_discount += discount
         
-        tax = round(subtotal * 0.1, 2)
+        tax = round((subtotal - total_discount) * 0.1, 2)
         cursor.execute("SELECT shipping_cost FROM orders WHERE order_id=%s", (order_id,))
-        shipping = cursor.fetchone()[0]
-        total = subtotal + tax + shipping
+        shipping = float(cursor.fetchone()[0])
+        total = round(subtotal - total_discount + tax + shipping, 2)
         
         cursor.execute("""UPDATE orders 
                          SET total_amount=%s, discount_amount=%s, tax_amount=%s 
                          WHERE order_id=%s""",
-                      (total, subtotal * 0.1, tax, order_id))
+                      (total, total_discount, tax, order_id))
         
         # Payment transaction
         cursor.execute("""INSERT INTO payment_transactions 

@@ -1,54 +1,119 @@
-# Airflow ETL Pipeline Demo
+# ETL Data Pipeline: MySQL to Neo4j
 
-## Overview
-ETL pipeline using Apache Airflow to process sales data.
+<!-- [![GitHub](https://img.shields.io/badge/GitHub-etl--data--pipeline-blue)](https://github.com/Ayush625sri/etl-data-pipeline) -->
 
-**Pipeline Flow:** Extract CSV → Transform data → Load summary
+Apache Airflow-orchestrated ETL pipeline transforming e-commerce data from MySQL relational database into Neo4j knowledge graph for advanced analytics.
 
-## Prerequisites
+## 🎯 Project Overview
+
+**Objective:** Demonstrate production-grade ETL pipeline converting structured data into graph relationships for complex query patterns and business intelligence.
+
+**Key Features:**
+- 4 automated data pipelines
+- 10 MySQL tables → 8 Neo4j node types
+- 12 relationship types with derived analytics
+- Incremental data synchronization
+- Error handling and retry logic
+
+## 📊 Data Flow
+```
+MySQL (10 tables, 10K+ records)
+    ↓
+Apache Airflow (4 DAG pipelines)
+    ↓
+Neo4j Graph (8 nodes, 12 relationships)
+```
+
+## 🏗️ Architecture
+
+**Pipeline 1:** Core entities (customers, products, categories, suppliers)  
+**Pipeline 2:** Transactions (orders, order items, addresses)  
+**Pipeline 3:** Enrichment (reviews, payments, inventory)  
+**Pipeline 4:** Analytics (co-purchases, customer similarity, metrics)
+
+## 🚀 Quick Start
+
+### Prerequisites
 - Docker Desktop
+- MySQL 8.0
+- Neo4j Desktop
 - Python 3.8+
 
-## Setup
+### Setup
 
-1. **Clone/Download project**
+1. Clone repository:
+```bash
+git clone https://github.com/Ayush625sri/etl-data-pipeline
+cd etl-data-pipeline
+```
 
-2. **Start Airflow:**
+2. Configure connections in `config/settings.py`
+
+3. Generate MySQL data:
+```bash
+python -m setup.schema
+python -m setup.generate_data
+```
+
+4. Start Airflow:
 ```bash
 docker-compose up -d
 ```
 
-3. **Generate dummy data:**
-```bash
-python -m venv venv
-venv\Scripts\activate  # Windows
-pip install -r requirements.txt
-python generate_dummy_data.py
+5. Access Airflow UI: http://localhost:8080 (airflow/airflow)
+
+6. Trigger pipelines in order: core_entities → transactions → enrichment → analytics
+
+## 📁 Project Structure
+```
+etl-data-pipeline/
+├── dags/
+│   ├── 1_core_entities.py
+│   ├── 2_transactions.py
+│   ├── 3_enrichment.py
+│   └── 4_analytics.py
+├── setup/
+│   ├── schema.py
+│   └── generate_data.py
+├── config/
+│   └── settings.py
+├── docker-compose.yaml
+├── requirements.txt
+├── README.md
+└── DOCUMENTATION.md
 ```
 
-4. **Access Airflow UI:**
-- URL: http://localhost:8080
-- Username: `airflow`
-- Password: `airflow`
+## 📈 Results
 
-5. **Run pipeline:**
-- Enable the `sales_etl_pipeline` DAG
-- Click "Trigger DAG"
+**Nodes Created:** 6,035  
+**Relationships Created:** 16,718  
+**Data Sources:** 10 MySQL tables  
+**Pipeline Execution:** Daily (1-3) + Weekly (4)
 
-## Project Structure
+## 🔍 Sample Queries
+
+**Customer purchase journey:**
+```cypher
+MATCH path = (c:Customer)-[:PLACED]->(:Order)-[:CONTAINS]->(p:Product)
+WHERE c.id = 1
+RETURN path
 ```
-├── dags/                   # Airflow DAG files
-├── data/                   # Input/output data
-├── docker-compose.yaml     # Airflow setup
-└── generate_dummy_data.py  # Data generator
+
+**Product recommendations:**
+```cypher
+MATCH (p1:Product)-[:BOUGHT_TOGETHER]->(p2:Product)
+RETURN p1.name, p2.name
+ORDER BY p2.name
 ```
 
-## Pipeline Steps
-1. **Extract:** Read raw sales CSV
-2. **Transform:** Calculate totals, remove duplicates
-3. **Load:** Generate regional summary
+## 📚 Documentation
 
-## Stopping Airflow
-```bash
-docker-compose down
-```
+Complete documentation available in [DOCUMENTATION.md](DOCUMENTATION.md)
+
+## 🛠️ Tech Stack
+
+- **Orchestration:** Apache Airflow 2.8.1
+- **Source DB:** MySQL 8.0
+- **Target DB:** Neo4j
+- **Language:** Python 3.8
+- **Deployment:** Docker Compose
