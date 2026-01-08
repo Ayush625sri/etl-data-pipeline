@@ -145,6 +145,32 @@ docker-compose up -d
 ```
 Access UI: http://localhost:8080 (airflow/airflow)
 
+### Environment Configuration
+
+1. **Copy environment template:**
+```bash
+cp .env.example .env
+```
+
+2. **Update `.env` with your credentials:**
+```
+AIRFLOW_UID=50000
+_PIP_ADDITIONAL_REQUIREMENTS=mysql-connector-python neo4j pandas
+
+# MySQL Configuration
+MYSQL_HOST=host.docker.internal
+MYSQL_USER=root
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_PORT=3306
+MYSQL_DATABASE=ecommerce
+
+# Neo4j Configuration
+NEO4J_URI=bolt://host.docker.internal:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=your_neo4j_password
+NEO4J_DATABASE=ecommerce
+```
+
 ### Running Pipelines
 
 **Manual Execution:**

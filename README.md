@@ -47,7 +47,10 @@ git clone https://github.com/Ayush625sri/etl-data-pipeline
 cd etl-data-pipeline
 ```
 
-2. Configure connections in `config/settings.py`
+2. Configure environment:
+```bash
+cp .env.example .env
+```
 
 3. Generate MySQL data:
 ```bash
